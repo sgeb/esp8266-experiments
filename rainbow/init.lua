@@ -23,6 +23,7 @@ rgb_purple = string.char(117, 7, 135)
 rainbow = {rgb_red, rgb_orange, rgb_green, rgb_blue, rgb_purple}
 
 counter = 1
+delta = 1
 gpio.mode(buttonPin, gpio.OUTPUT, gpio.PULLUP)
 ws2812.writergb(rgbPin, rgb_black:rep(5))
 
@@ -43,11 +44,10 @@ tmr.alarm(rgbTimerId, 500, 1, function()
             ws2812.writergb(rgbPin, rgb)
         end
 
-        if counter == 8 then
-            counter = 0
-        else
-            counter = counter + 1
+        if counter == 0 or counter == 5 then
+            delta = -delta
         end
+        counter = counter + delta
     end
 
     if mode == modeBlink then
@@ -71,7 +71,7 @@ end )
 tmr.stop(buttonTimerId)
 tmr.alarm(buttonTimerId, 150, 1, function()
     if gpio.read(buttonPin) == 0 then
-        counter = 0
+        counter = 1
         ws2812.writergb(rgbPin, rgb_black:rep(5))
         mode = (mode + 1) % #modes
     end
